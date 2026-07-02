@@ -242,11 +242,14 @@ def foldr (f : α → β → β) (init : β) : {k : ℕ} → (Fin k → α) → 
   |     0, _ => init
   | _ + 1, v => f (vecHead v) (Matrix.foldr f init (vecTail v))
 
-def map (f : α → β) : (Fin k → α) → (Fin k → β) := fun v ↦ f ∘ v
+-- Renamed from `Matrix.map` to `Matrix.vecMap` to avoid clashing with Mathlib's
+-- `Matrix.map` (both generate `Matrix.map.eq_1`, breaking any downstream import of
+-- Foundation alongside Mathlib matrix/analysis theory, e.g. Bochner integration).
+def vecMap (f : α → β) : (Fin k → α) → (Fin k → β) := fun v ↦ f ∘ v
 
 section map
 
-postfix:max "⨟" => map
+postfix:max "⨟" => vecMap
 
 variable (f : α → β)
 
@@ -254,11 +257,11 @@ variable (f : α → β)
 
 @[simp] lemma map_cons (a : α) (v : Fin k → α) : f⨟ (a :> v) = f a :> f⨟ v := by
   ext i
-  cases i using Fin.cases <;> simp [map]
+  cases i using Fin.cases <;> simp [vecMap]
 
 @[simp] lemma map_cons' (v : Fin (k + 1) → α) : f⨟ v = f (vecHead v) :> f⨟ (vecTail v) := by
   ext i
-  cases i using Fin.cases <;> { simp [map]; rfl }
+  cases i using Fin.cases <;> { simp [vecMap]; rfl }
 
 @[simp] lemma map_app (v : Fin k → α) (i : Fin k) : (f⨟ v) i = f (v i) := rfl
 
